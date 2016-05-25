@@ -1,0 +1,1 @@
+Control freeswitch with event socket library.
