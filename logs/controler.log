@@ -1,0 +1,15 @@
+[2016-05-26 20:17:00][DEBUG]main:listen = 8080, main:worker_count = 2, main:epoll_size = 200
+[2016-05-26 20:17:01][DEBUG]log:level = 7, log:log_file = ./logs/controler.log
+[2016-05-26 20:17:01][DEBUG]ssl:use = 1, ssl:cert_file = ./conf/controler.pem, ssl:key_file = ./conf/controler.pem, ssl:protocols = 38
+[2016-05-26 20:17:01][DEBUG]init_ssl_context success...
+[2016-05-26 20:17:01][DEBUG]worker process channel 6:7
+[2016-05-26 20:17:01][DEBUG]socket 6 set nonblocking success.
+[2016-05-26 20:17:01][DEBUG]socket 7 set nonblocking success.
+[2016-05-26 20:17:01][DEBUG]worker process pid 4904
+:9
+[2016-05-26 20:17:01][DEBUG]socket 8 set nonblocking success.
+[2016-05-26 20:17:01][DEBUG]socket 9 set nonblocking success.
+[2016-05-26 20:17:01][DEBUG]worker process pid 4905
+ived
+[2016-05-26 20:17:01][DEBUG]worker process %P exited with code 4904[2016-05-26 20:17:01][DEBUG]signal 17 (SIGCHLD) received
+[2016-05-26 20:17:01][DEBUG]worker process %P exited with code 4905[2016-05-26 20:17:08][DEBUG]signal 2 (SIGINT) received, exiting
