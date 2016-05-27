@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include "ctrl_def.h"
 #include "ctrl_conf.h"
 
 typedef enum
@@ -21,11 +22,11 @@ typedef enum
 #define CTRL_LOG_PARAM  __FILE__, __FUNCTION__, __LINE__
 
 
-typedef struct ctrl_log_s
+struct ctrl_log_s
 {
     ctrl_log_level     level;
     FILE               *fp;
-}ctrl_log_t;
+};
 
 void ctrl_log_print(const ctrl_log_t *log, ctrl_log_level level, const char *format, ...);
 

@@ -1,16 +1,17 @@
 #ifndef __SOCK_SERVER_H__
 #define __SOCK_SERVER_H__
 
+#include "ctrl_def.h"
 #include "sock_base.h"
 
-typedef struct server_socket_s
+struct server_socket_s
 {
-    int         fd;
-    int         port;
+    ctrl_socket_t   sock;
+    int             port;
 #ifdef HAS_OPENSSL
-    SSL_CTX     *ssl_ctx;
+    SSL_CTX         *ssl_ctx;
 #endif /* HAS_OPENSSL */
-}server_socket_t;
+};
 
 int init_server_socket(server_socket_t *serv, int port, const ctrl_log_t *log
 #ifdef HAS_OPENSSL

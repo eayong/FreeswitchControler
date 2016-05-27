@@ -16,7 +16,14 @@ int tcp_init_socket(ctrl_socket_t *sock, int fd, socket_type_t type, const ctrl_
 
     sock->fd = fd;
     sock->type = type;
-    sock->status = SOCKET_CONNECTED;
+    if (type == SOCKET_TCP_ACCEPT)
+    {
+        sock->status = SOCKET_ACCEPTED;
+    }
+    else
+    {
+        sock->status = SOCKET_CONNECTED;
+    }
     sock->send = tcp_send;
     sock->recv = tcp_recv;
     sock->handshake = tcp_handshake;

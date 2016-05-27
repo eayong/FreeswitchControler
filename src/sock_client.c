@@ -19,9 +19,10 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
 #endif /* HAS_OPENSSL */
     )
 {
-    if (client == NULL)
-        return SOCKET_ERR_FAIL;
-    
+#ifdef HAS_OPENSSL
+        client->ssl_ctx = (SSL_CTX *) ssl_ctx;
+#endif /* HAS_OPENSSL */
+
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
     {
@@ -76,7 +77,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
 #ifdef HAS_OPENSSL
     if (client->ssl_ctx != NULL)
     {
-        if (ssl_init_socket(&client->sock, fd, SOCKET_SSL_CLIENT, log, ssl_ctx) != SOCKET_ERR_NONE)
+        if (ssl_init_socket(&client->sock, fd, SOCKET_SSL_CLIENT, log, client->ssl_ctx) != SOCKET_ERR_NONE)
         {
             ctrl_log_print(log, CTRL_LOG_ERROR, "ssl_init_socket %d failed. error: %s\n", fd, strerror(errno));
             close(fd);

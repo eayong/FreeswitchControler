@@ -38,19 +38,6 @@ sig_atomic_t    ctrl_change_binary;
 
 extern int     ctrl_daemonized;
 
-static int spawn_process(const controler_t *ctrl, process_func proc, void *data,
-    const char *name, int type);
-static void worker_process(const controler_t *ctrl, void *data);
-static void init_process();
-
-static int init_channel(int *channel, const char *name, const ctrl_log_t *log);
-static void close_channel(int *channel, const char *name, const ctrl_log_t *log);
-
-static void process_get_status();
-
-static void signal_handler(int signo);
-
-
 typedef struct ctrl_signal_s
 {
     int         signo;
@@ -58,6 +45,19 @@ typedef struct ctrl_signal_s
     const char  *name;
     void        (*handler)(int signo);
 }ctrl_signal_t;
+
+
+static int spawn_process(const controler_t *ctrl, process_func proc, void *data,
+    const char *name, int type);
+static void worker_process(const controler_t *ctrl, void *data);
+static void init_process();
+static void process_get_status();
+static void worker_process_exit(const controler_t *ctrl);
+static void process_event(const controler_t *ctrl);
+
+static int init_channel(int *channel, const char *name, const ctrl_log_t *log);
+static void close_channel(int *channel, const char *name, const ctrl_log_t *log);
+static void signal_handler(int signo);
 
 ctrl_signal_t signals[] = {
     { SIGHUP, "SIGHUP", "reload", signal_handler },
@@ -86,6 +86,7 @@ ctrl_signal_t signals[] = {
 
     { 0, NULL, "", NULL }
 };
+
 
 static void signal_handler(int signo)
 {
@@ -371,8 +372,32 @@ static void worker_process(const controler_t *ctrl, void *data)
 {
     ctrl_process = CTRL_PROCESS_WORKER;
     ctrl_log_print(ctrl->log, CTRL_LOG_INFO, "worker process pid %d\n", ctrl_pid);
+
+    for (;;)
+    {
+        if (ctrl_exiting)
+        {
+            worker_process_exit(ctrl);
+        }
+
+        process_event(ctrl);
+    }
+}
+
+static void worker_process_exit(const controler_t *ctrl)
+{
+    if (ctrl_exiting)
+    {
+    }
+    
     exit(0);
 }
+
+static void process_event(const controler_t *ctrl)
+{
+    
+}
+
 
 static int init_channel(int *channel, const char *name, const ctrl_log_t *log)
 {

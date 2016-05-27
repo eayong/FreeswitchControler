@@ -1,5 +1,9 @@
 TARGET = controler
 
+openssl 	= 1
+debug 		= 1
+use_event	= epoll
+
 OUT_DIR = ./bin
  
 $(shell if [ ! -d $(OUT_DIR) ]; then mkdir $(OUT_DIR) -p;fi;)
@@ -20,6 +24,8 @@ OBJECTS += ./src/sock_client.o
 OBJECTS += ./src/sock_server.o
 OBJECTS += ./src/sock_tcp.o
 OBJECTS += ./src/units.o
+OBJECTS += ./src/ctrl_connect.o
+OBJECTS += ./src/ctrl_event.o
 OBJECTS += ./thirdparty/iniparser/dictionary.o
 OBJECTS += ./thirdparty/iniparser/iniparser.o
 
@@ -29,6 +35,14 @@ ifeq ($(openssl), 1)
 	OBJECTS += ./src/ssl_context.o
 	LIB_OPENSSL = -lssl -lcrypto
 	CFLAGS += -DHAS_OPENSSL
+endif
+
+ifeq ($(use_event), epoll)
+	OBJECTS += ./src/epoll_event.o
+	CFLAGS += -DHAS_EPOLL_EVENT
+else
+	ifeq ($(use_event), select)
+	endif
 endif
 
 ifeq ($(debug), 1)

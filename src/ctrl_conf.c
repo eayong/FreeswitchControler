@@ -7,9 +7,11 @@
 #define DEFAULT_LOG_FILE        "./controler.log"
 #define DEFAULT_CERT_FILE       "./cert.pem"
 
-#define DEFAULT_LISTEN_PORT     8080
-#define DEFAULT_WORKER_COUNT    2
-#define EPOLL_DEFUAL_SIZE       100
+#define DEFAULT_LISTEN_PORT             8080
+#define DEFAULT_WORKER_COUNT            2
+#define DEFAUL_MAX_CONNECTION_SIZE      10000
+#define DEFAUL_MAX_EVENT_SIZE           512
+#define DEFAUL_EVENT_TIMER              1000
 
 
 int init_ctrl_conf(ctrl_conf_t *conf, const char *conf_file)
@@ -31,7 +33,9 @@ int init_ctrl_conf(ctrl_conf_t *conf, const char *conf_file)
     }
     conf->listen = iniparser_getint(ini, "main:listen", DEFAULT_LISTEN_PORT);
     conf->worker = iniparser_getint(ini, "main:worker_count", DEFAULT_WORKER_COUNT);
-    conf->epoll_size = iniparser_getint(ini, "main:epoll_size", EPOLL_DEFUAL_SIZE);
+    conf->connects = iniparser_getint(ini, "main:connects", DEFAUL_MAX_CONNECTION_SIZE);
+    conf->events = iniparser_getint(ini, "event:events", DEFAUL_MAX_EVENT_SIZE);
+    conf->timer = iniparser_getint(ini, "event:timer", DEFAUL_EVENT_TIMER);
     conf->log_level = iniparser_getint(ini, "log:level", CTRL_LOG_INFO);
     conf->log_file = strdup(iniparser_getstring(ini, "log:log_file", DEFAULT_LOG_FILE));
     

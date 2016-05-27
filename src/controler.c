@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "controler.h"
 
 
@@ -10,31 +12,96 @@ int init_controler(controler_t *ctrl, const ctrl_conf_t *conf, ctrl_log_t *log)
     {
         return CTRL_ERROR;
     }
+    
+    int i;
+    ctrl_connection_t *conn, *next = NULL;
     ctrl->conf = conf;
     ctrl->log = log;
-    
-    ctrl->ep_fd = epoll_create(conf->epoll_size);
-    if (ctrl->ep_fd < 0)
+
+    ctrl->connections = calloc(sizeof(ctrl_connection_t), conf->connects);
+    if (ctrl->connections == NULL)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "epoll_create error. %s\n", strerror(errno));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "calloc connections error.");
+        return CTRL_ERROR;
+    }
+    ctrl->readev = calloc(sizeof(ctrl_event_t), conf->connects);
+    if (ctrl->readev == NULL)
+    {
+        ctrl_log_print(log, CTRL_LOG_ERROR, "calloc read event error.");
+        return CTRL_ERROR;
+    }
+    ctrl->writeev = calloc(sizeof(ctrl_event_t), conf->connects);
+    if (ctrl->writeev == NULL)
+    {
+        ctrl_log_print(log, CTRL_LOG_ERROR, "calloc write event error.");
         return CTRL_ERROR;
     }
     
-    int ret = 0;
-#ifdef HAS_OPENSSL
-    ret = init_server_socket(&ctrl->listen.sock, conf->listen, log, ctrl->ssl_ctx->serv_ctx);
-#else
-    ret = init_server_socket(&ctrl->listen.sock, conf->listen, log);
-#endif
-    if (ret != SOCKET_ERR_NONE)
+    conn = ctrl->connections;
+    for (i = conf->connects; i >= 0; i--)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "init_server_socket error.");
-        return CTRL_ERROR;
+        conn[i].next = next;
+        conn[i].readev = &ctrl->readev[i];
+        conn[i].writeev = &ctrl->writeev[i];
+        conn[i].index = i;
+        conn[i].log = ctrl->log;
+        reset_ctrl_socket(&conn[i].sock);
+        next = &conn[i];
     }
-    struct epoll_event *rev = &ctrl->listen.rev;
     
-    epoll_ctl(ctrl->ep_fd, EPOLL_CTL_ADD, ctrl->listen.sock.fd, rev);
+    ctrl->free_conn = next;
+    ctrl->nfree_conn = conf->connects;
+    
     g_ctrl = ctrl;
+    
+    if (init_accept_event(ctrl) != CTRL_OK)
+    {
+        ctrl_log_print(log, CTRL_LOG_ERROR, "init accept event error.");
+        return CTRL_ERROR;
+    }
+    
     return CTRL_OK;
 }
+
+void fini_controler(controler_t *ctrl)
+{
+    if (ctrl == NULL)
+        return;
+
+    int i;
+    
+    if (ctrl->ep_fd > 0)
+    {
+        close(ctrl->ep_fd);
+        ctrl->ep_fd = -1;
+    }
+
+    if (ctrl->listen.serv.sock.status != SOCKET_INVALID)
+    {
+        fini_server_socket(&ctrl->listen.serv, ctrl->log);
+    }
+
+    if (ctrl->connections)
+    {
+        for (i = 0; i < ctrl->conf->connects; i++)
+        {
+            ctrl->connections[i].sock.close(&ctrl->connections[i].sock, ctrl->log);
+        }
+        free(ctrl->connections);
+        ctrl->connections = NULL;
+    }
+
+    if (ctrl->writeev)
+    {
+        free(ctrl->writeev);
+        ctrl->writeev = NULL;
+    }
+    
+    if (ctrl->readev)
+    {
+        free(ctrl->readev);
+        ctrl->readev = NULL;
+    }
+}
+
 

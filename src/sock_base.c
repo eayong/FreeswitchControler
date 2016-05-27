@@ -6,6 +6,23 @@
 #include <error.h>
 #include <assert.h>
 
+void reset_ctrl_socket(ctrl_socket_t *sock)
+{
+    sock->fd = -1;
+    sock->status = SOCKET_INVALID;
+    sock->type = SOCKET_UNKONW_TYPE;
+    sock->send = NULL;
+    sock->recv = NULL;
+    sock->handshake = NULL;
+    sock->close = NULL;
+    memset(&sock->local_addr, 0, sizeof(sock->local_addr));
+    memset(&sock->remote_addr, 0, sizeof(sock->remote_addr));
+    
+#ifdef HAS_OPENSSL
+    sock->ssl = NULL;
+#endif // HAS_OPENSSL
+}
+
 int set_nonblocking(int fd, int blocking, const ctrl_log_t *log)
 {
     

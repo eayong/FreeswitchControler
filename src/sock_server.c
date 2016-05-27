@@ -48,7 +48,34 @@ int init_server_socket(server_socket_t *serv, int port, const ctrl_log_t *log
         return SOCKET_ERR_FAIL;
     }
     
-    serv->fd = fd;
+#ifdef HAS_OPENSSL
+    if (serv->ssl_ctx != NULL)
+    {
+        if (ssl_init_socket(&serv->sock, fd, SOCKET_SSL_ACCEPT, log, serv->ssl_ctx) != SOCKET_ERR_NONE)
+        {
+            ctrl_log_print(log, CTRL_LOG_ERROR, "ssl_init_socket %d failed. error: %s\n", fd, strerror(errno));
+            close(fd);
+            return SOCKET_ERR_FAIL;
+        }
+    }
+    else
+    {
+        if (tcp_init_socket(&serv->sock, fd, SOCKET_TCP_ACCEPT, log) != SOCKET_ERR_NONE)
+        {
+            ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s\n", fd, strerror(errno));
+            close(fd);
+            return SOCKET_ERR_FAIL;
+        }
+    }
+#else
+    if (tcp_init_socket(&serv->sock, fd, SOCKET_TCP_ACCEPT, log) != SOCKET_ERR_NONE)
+    {
+        ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s\n", fd, strerror(errno));
+        close(fd);
+        return SOCKET_ERR_FAIL;
+    }
+#endif // HAS_OPENSSL
+
     serv->port = port;
     
     return SOCKET_ERR_NONE;
@@ -60,15 +87,15 @@ int accept_socket(const server_socket_t *serv, ctrl_socket_t *sock, const ctrl_l
         return SOCKET_ERR_FAIL;
     
     struct sockaddr_in sa_cli;
-    size_t client_len;
-    int fd = accept(serv->fd, (struct sockaddr*)&sa_cli, (socklen_t*)&client_len);
+    size_t serv_len;
+    int fd = accept(serv->sock.fd, (struct sockaddr*)&sa_cli, (socklen_t*)&serv_len);
     if (fd < 0)
     {
         ctrl_log_print(log, CTRL_LOG_ERROR, "accept socket failed. error: %s\n", strerror(errno));
         return SOCKET_ERR_FAIL;
     }
 
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "accept client fd %d[%s:%d]\n", fd, inet_ntoa(sa_cli.sin_addr), ntohs(sa_cli.sin_port));
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "accept serv fd %d[%s:%d]\n", fd, inet_ntoa(sa_cli.sin_addr), ntohs(sa_cli.sin_port));
 
 #ifdef HAS_OPENSSL
     if (serv->ssl_ctx != NULL)
@@ -106,13 +133,14 @@ int fini_server_socket(server_socket_t *serv, const ctrl_log_t *log)
     if (serv == NULL)
         return SOCKET_ERR_FAIL;
 
-    if (serv->fd > 0)
+    if (serv->sock.status != SOCKET_INVALID)
     {
-        close(serv->fd);
-        serv->fd = -1;
+        close(serv->sock.fd);
+        serv->sock.fd = -1;
+        serv->sock.status = SOCKET_INVALID;
     }
 
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_server_socket %d success.\n", serv->fd);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_server_socket %d success.\n", serv->sock.fd);
     return SOCKET_ERR_NONE;
 }
 

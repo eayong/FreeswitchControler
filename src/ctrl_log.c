@@ -49,8 +49,9 @@ void ctrl_log_print(const ctrl_log_t * log, ctrl_log_level level, const char *fo
     va_start(ap, format);
     
     char buffer[LOG_BUFFER_LEN] = {0};
-    len = vsnprintf(buffer, sizeof(buffer), format, ap);
-    buffer[len] = 0;
+    len = vsnprintf(buffer, sizeof(buffer) - 1, format, ap);
+    buffer[len] = '\n';
+    buffer[len + 1] = 0;
     
     fprintf(log->fp, "%s", buffer);
     va_end(ap);
@@ -76,7 +77,7 @@ ctrl_log_t *init_ctrl_log(ctrl_log_t *init_log, const ctrl_conf_t *conf)
     }
 
     ctrl_log_print(log, CTRL_LOG_INFO, "main:listen = %d, main:worker_count = %d, main:epoll_size = %d\n",
-        conf->listen, conf->worker, conf->epoll_size);
+        conf->listen, conf->worker, conf->connects);
     ctrl_log_print(log, CTRL_LOG_INFO, "log:level = %d, log:log_file = %s\n",
         conf->log_level, conf->log_file);
     ctrl_log_print(log, CTRL_LOG_INFO, "ssl:use = %d, ssl:cert_file = %s, ssl:key_file = %s, ssl:protocols = %x\n",

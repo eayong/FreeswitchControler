@@ -3,11 +3,13 @@
 
 #include "ctrl_def.h"
 
-typedef struct ctrl_conf_s
+struct ctrl_conf_s
 {
     int     listen;
     int     worker;
-    int     epoll_size;
+    int     connects;
+    int     events;
+    int     timer;
     int     process;
     int     log_level;
     int     use_ssl;
@@ -15,7 +17,7 @@ typedef struct ctrl_conf_s
     char    *log_file;
     char    *cert_file;
     char    *key_file;
-}ctrl_conf_t;
+};
 
 
 int init_ctrl_conf(ctrl_conf_t *conf, const char *conf_file);

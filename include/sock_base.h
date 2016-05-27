@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <fcntl.h>
 
+#include "ctrl_def.h"
 #include "ctrl_log.h"
 
 #define SOCKET_ERR_NONE     0
@@ -26,7 +27,8 @@ typedef enum
     SOCKET_INVALID,
     SOCKET_HANDSHARE,
     SOCKET_HANDSHARE_SSL,
-    SOCKET_CONNECTED
+    SOCKET_CONNECTED,
+    SOCKET_ACCEPTED,
 }socket_status_t;
 
 typedef enum
@@ -34,17 +36,13 @@ typedef enum
     SOCKET_TCP_CLIENT,
     SOCKET_TCP_SERVER,
     SOCKET_SSL_CLIENT,
-    SOCKET_SSL_SERVER
+    SOCKET_SSL_SERVER,
+    SOCKET_TCP_ACCEPT,
+    SOCKET_SSL_ACCEPT,
+    SOCKET_UNKONW_TYPE,
 }socket_type_t;
 
-struct ctrl_socket_s;
-
-typedef int (*send_func) (const struct ctrl_socket_s *sock, const char *data, uint32_t len, const ctrl_log_t *log);
-typedef int (*recv_func) (const struct ctrl_socket_s *sock, char *data, uint32_t len, const ctrl_log_t *log);
-typedef int (*handshake_func) (struct ctrl_socket_s *sock, const ctrl_log_t *log);
-typedef void (*close_func) (struct ctrl_socket_s *sock, const ctrl_log_t *log);
-
-typedef struct ctrl_socket_s
+struct ctrl_socket_s
 {
     int                 fd;
     socket_type_t       type;
@@ -56,12 +54,13 @@ typedef struct ctrl_socket_s
     SSL     *ssl;
 #endif // HAS_OPENSSL
 
-    send_func       send;
-    recv_func       recv;
-    handshake_func  handshake;
-    close_func      close;
+    int (*send) (const ctrl_socket_t *sock, const char *data, uint32_t len, const ctrl_log_t *log);
+    int (*recv) (const ctrl_socket_t *sock, char *data, uint32_t len, const ctrl_log_t *log);
+    int (*handshake) (ctrl_socket_t *sock, const ctrl_log_t *log);
+    void (*close) (ctrl_socket_t *sock, const ctrl_log_t *log);
+};
 
-}ctrl_socket_t;
+void reset_ctrl_socket(ctrl_socket_t *sock);
 
 int set_nonblocking(int fd, int blocking, const ctrl_log_t *log);
 

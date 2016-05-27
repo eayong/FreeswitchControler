@@ -13,14 +13,15 @@
 #define CTRL_SSL_TLSv1_1  0x0010
 #define CTRL_SSL_TLSv1_2  0x0020
 
+#include "ctrl_def.h"
 #include "ctrl_log.h"
 
-typedef struct ssl_context_s
+struct ssl_context_s
 {
     SSL_CTX     *cli_ctx;
     SSL_CTX     *serv_ctx;
     int         protocols;
-}ssl_context_t;
+};
 
 int init_ssl_context(ssl_context_t *ssl_ctx, int protocols, const ctrl_log_t *log,
     const char *cert_file, const char *key_file);

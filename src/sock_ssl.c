@@ -33,7 +33,14 @@ int ssl_init_socket(ctrl_socket_t *sock, int fd, socket_type_t type, const ctrl_
 
     sock->fd = fd;
     sock->type = type;
-    sock->status = SOCKET_CONNECTED;
+    if (type == SOCKET_SSL_ACCEPT)
+    {
+        sock->status = SOCKET_ACCEPTED;
+    }
+    else
+    {
+        sock->status = SOCKET_CONNECTED;
+    }
     sock->send = ssl_send;
     sock->recv = ssl_recv;
     sock->handshake = ssl_handshake;
@@ -213,7 +220,7 @@ static int ssl_handshake(ctrl_socket_t *sock, const ctrl_log_t *log)
     }
     else
     {
-        return SOCKET_ERR_SSL;
+        return SSL_ERROR_NONE;
     }
     
     int ret = SSL_do_handshake(sock->ssl);

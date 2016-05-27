@@ -70,7 +70,6 @@ static void set_option(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-
     controler_t ctrl;
     ctrl_conf_t conf;
     ctrl_log_t *log = NULL, init_log;
@@ -137,6 +136,16 @@ int main(int argc, char **argv)
     {
         dispacth_process_master(&ctrl);
     }
+
+    /* finish controler resource */
+    fini_controler(&ctrl);
+    
+#ifdef HAS_OPENSSL
+    fini_ssl_context(&ssl_ctx, log);
+#endif
+
+    fini_ctrl_conf(&conf);
+    fini_ctrl_log(log);
     
     return 0;
 }

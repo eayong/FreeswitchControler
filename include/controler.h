@@ -4,33 +4,35 @@
 #include <stdio.h>
 #include <error.h>
 #include <errno.h>
-#include <sys/epoll.h>
 
+#include "ctrl_def.h"
 #include "ctrl_log.h"
 #include "ctrl_conf.h"
 #include "ssl_context.h"
 #include "sock_server.h"
+#include "ctrl_event.h"
+#include "ctrl_connect.h"
 
-typedef struct listening_s
-{
-    server_socket_t     sock;
-    struct epoll_event  rev;
-}listening_t;
-
-typedef struct controler_s
+struct controler_s
 {
     int                 ep_fd;
+    int                 nfree_conn;
     const ctrl_log_t    *log;
     const ctrl_conf_t   *conf;
-    listening_t         listen;
+    ctrl_connection_t   *connections;
+    ctrl_connection_t   *free_conn;
+    ctrl_event_t        *readev;
+    ctrl_event_t        *writeev;
+    server_socket_t     listen;
     
 #ifdef HAS_OPENSSL
     const ssl_context_t *ssl_ctx;
 #endif
-}controler_t;
+};
 
-extern volatile controler_t *g_ctrl;
 
 int init_controler(controler_t *ctrl, const ctrl_conf_t *conf, ctrl_log_t *log);
+
+void fini_controler(controler_t *ctrl);
 
 #endif /* __CTRL_CONTROLER_H__ */
