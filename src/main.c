@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 
     /* begin replace config with command */
     if (listen_port != -1)
-        conf.listen = listen_port;
+        conf.ctrl_listen = listen_port;
     
     conf.process = ctrl_process;
     /* end replace config with command */

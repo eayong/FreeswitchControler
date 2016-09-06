@@ -23,7 +23,7 @@ struct controler_s
     ctrl_connection_t   *free_conn;
     ctrl_event_t        *readev;
     ctrl_event_t        *writeev;
-    server_socket_t     listen;
+    server_socket_t     ctrl_listen;
     
 #ifdef HAS_OPENSSL
     const ssl_context_t *ssl_ctx;

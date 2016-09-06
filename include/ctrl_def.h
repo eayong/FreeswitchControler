@@ -23,7 +23,7 @@ typedef struct client_socket_s      client_socket_t;
 typedef struct server_socket_s      server_socket_t;
 
 
-extern volatile controler_t *g_ctrl;
+extern controler_t *g_ctrl;
 
 #endif /* __CTRL_DEFINE_H__ */
 

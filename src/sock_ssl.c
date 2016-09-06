@@ -21,13 +21,13 @@ int ssl_init_socket(ctrl_socket_t *sock, int fd, socket_type_t type, const ctrl_
 
     if(NULL == sock->ssl)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_new(%d) failed [%s]\n", fd, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_new(%d) failed [%s]", fd, ERR_error_string(ERR_get_error(), NULL));
         return SOCKET_ERR_FAIL;
     }
     
     if(SSL_set_fd(sock->ssl, fd) != 1)
     {        
-        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_set_fd(%d) failed [%s]\n", fd, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_set_fd(%d) failed [%s]", fd, ERR_error_string(ERR_get_error(), NULL));
         return SOCKET_ERR_FAIL;
     }
 
@@ -88,20 +88,20 @@ static int ssl_send(const ctrl_socket_t *sock, const char *data, uint32_t len, c
         case SSL_ERROR_WANT_WRITE:
         case SSL_ERROR_WANT_READ:
         case SSL_ERROR_WANT_X509_LOOKUP:
-            ctrl_log_print(log, CTRL_LOG_DEBUG, "SSL_write %d BLOCK\n", sock->fd);
+            ctrl_log_print(log, CTRL_LOG_DEBUG, "SSL_write %d BLOCK", sock->fd);
             return SOCKET_ERR_BLOCK;
             
         case SSL_ERROR_SYSCALL:
         case SSL_ERROR_SSL:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d ERROR, %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d ERROR, %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
             return SOCKET_ERR_FAIL;
             
         case SSL_ERROR_ZERO_RETURN:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d return zore, socket close\n", sock->fd);
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d return zore, socket close", sock->fd);
             return SOCKET_ERR_CLOSE;
             
         default:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d unkonw error, msg: %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_write %d unkonw error, msg: %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
             return SOCKET_ERR_FAIL;
         }
         
@@ -135,12 +135,12 @@ static int ssl_recv(const ctrl_socket_t *sock, char *data, uint32_t len, const c
             ret = SSL_get_error(sock->ssl, ret);
             if (ret == SSL_ERROR_WANT_WRITE || ret == SSL_ERROR_WANT_READ)
             {
-                ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %s block, %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+                ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %s block, %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
                 ret = SOCKET_ERR_BLOCK;
             }
             else
             {
-                ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d failed, %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+                ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d failed, %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
                 return SOCKET_ERR_FAIL;
             }
         }
@@ -155,7 +155,7 @@ static int ssl_recv(const ctrl_socket_t *sock, char *data, uint32_t len, const c
     {
         if (nread + nleft > len)
         {
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d Warnning too many data to read, bufsize: %d, to readsize: %d\n",
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d Warnning too many data to read, bufsize: %d, to readsize: %d",
                 sock->fd, len, nread + nleft);
             break;
         }
@@ -169,19 +169,19 @@ static int ssl_recv(const ctrl_socket_t *sock, char *data, uint32_t len, const c
         case SSL_ERROR_WANT_WRITE:
         case SSL_ERROR_WANT_READ:
         case SSL_ERROR_WANT_X509_LOOKUP:
-            ctrl_log_print(log, CTRL_LOG_DEBUG, "SSL_read %d BLOCK.\n", sock->fd);
+            ctrl_log_print(log, CTRL_LOG_DEBUG, "SSL_read %d BLOCK.", sock->fd);
             return nread;
             
         case SSL_ERROR_SYSCALL:
         case SSL_ERROR_SSL:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d ERROR, msg: %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d ERROR, msg: %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
             return SOCKET_ERR_FAIL;
             
         case SSL_ERROR_ZERO_RETURN:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d return zore, socket close\n", sock->fd);
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d return zore, socket close", sock->fd);
             return SOCKET_ERR_CLOSE;
         default:
-            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d unkonw error, msg: %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+            ctrl_log_print(log, CTRL_LOG_INFO, "SSL_read %d unkonw error, msg: %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
             return SOCKET_ERR_FAIL;
         }
         
@@ -236,20 +236,20 @@ static int ssl_handshake(ctrl_socket_t *sock, const ctrl_log_t *log)
     case SSL_ERROR_WANT_WRITE:
     case SSL_ERROR_WANT_READ:
     case SSL_ERROR_WANT_X509_LOOKUP:
-        ctrl_log_print(log, CTRL_LOG_DEBUG, "Socket %d blocking when SSL_do_handshake.\n", sock->fd);
+        ctrl_log_print(log, CTRL_LOG_DEBUG, "Socket %d blocking when SSL_do_handshake.", sock->fd);
         return SOCKET_ERR_BLOCK;
         
     case SSL_ERROR_ZERO_RETURN:
-        ctrl_log_print(log, CTRL_LOG_INFO, "Socket %d was close when SSL_do_handshake.\n", sock->fd);
+        ctrl_log_print(log, CTRL_LOG_INFO, "Socket %d was close when SSL_do_handshake.", sock->fd);
         return SOCKET_ERR_CLOSE;
         
     case SSL_ERROR_SYSCALL:
     case SSL_ERROR_SSL:
-        ctrl_log_print(log, CTRL_LOG_INFO, "SSL_do_handshake  %d failed, msg: %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_INFO, "SSL_do_handshake  %d failed, msg: %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
         return SOCKET_ERR_SSL;
         
     default:
-        ctrl_log_print(log, CTRL_LOG_INFO, "SSL_do_handshake %d unkonw error, msg: %s\n", sock->fd, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_INFO, "SSL_do_handshake %d unkonw error, msg: %s", sock->fd, ERR_error_string(ERR_get_error(), NULL));
         return SOCKET_ERR_FAIL;
     }
     return SOCKET_ERR_FAIL;
@@ -265,7 +265,7 @@ static void ssl_close(ctrl_socket_t *sock, const ctrl_log_t *log)
         close(sock->fd);
         sock->status = SOCKET_INVALID;
     }
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d close.\n", sock->fd);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d close.", sock->fd);
 }
 
 static void show_certificate(const ctrl_socket_t *sock, const ctrl_log_t *log)
@@ -276,18 +276,18 @@ static void show_certificate(const ctrl_socket_t *sock, const ctrl_log_t *log)
     X509 *cert = SSL_get_peer_certificate(sock->ssl);
     if (cert != NULL)
     {
-        ctrl_log_print(log, CTRL_LOG_DEBUG, "%s certificate %d:\n", sock->type == SOCKET_SSL_SERVER ? "local" : "remote", sock->fd);
+        ctrl_log_print(log, CTRL_LOG_DEBUG, "%s certificate %d:", sock->type == SOCKET_SSL_SERVER ? "local" : "remote", sock->fd);
         
         char *str = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
         if (str == NULL)
             return;
-        ctrl_log_print(log, CTRL_LOG_DEBUG, "\t subject: %s\n", str);
+        ctrl_log_print(log, CTRL_LOG_DEBUG, "\t subject: %s", str);
         OPENSSL_free(str);
         
         str = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
         if (str == NULL)
             return;
-        ctrl_log_print(log, CTRL_LOG_DEBUG, "\t issuer: %s\n", str);
+        ctrl_log_print(log, CTRL_LOG_DEBUG, "\t issuer: %s", str);
         OPENSSL_free(str);
         
         /* We could do all sorts of certificate verification stuff here before
@@ -297,7 +297,7 @@ static void show_certificate(const ctrl_socket_t *sock, const ctrl_log_t *log)
     }
     else
     {
-        ctrl_log_print(log, CTRL_LOG_DEBUG, "%s has not certificate %d:\n", sock->type == SOCKET_SSL_SERVER ? "local" : "remote", sock->fd);
+        ctrl_log_print(log, CTRL_LOG_DEBUG, "%s has not certificate %d:", sock->type == SOCKET_SSL_SERVER ? "local" : "remote", sock->fd);
     }
 }
 

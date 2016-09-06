@@ -204,7 +204,7 @@ static void signal_handler(int signo)
         break;
     }
 
-    ctrl_log_print(g_ctrl->log, CTRL_LOG_NOTICE, "signal %d (%s) received%s\n",
+    ctrl_log_print(g_ctrl->log, CTRL_LOG_NOTICE, "signal %d (%s) received%s",
         signo, sig->signame, action);
 
     if (signo == SIGCHLD)
@@ -242,11 +242,11 @@ static void process_get_status()
             }
             if (errno == ECHILD)
             {
-                ctrl_log_print(g_ctrl->log, CTRL_LOG_INFO, "waitpid() failed. %s\n", strerror(errno));
+                ctrl_log_print(g_ctrl->log, CTRL_LOG_INFO, "waitpid() failed. %s", strerror(errno));
                 return;
             }
             
-            ctrl_log_print(g_ctrl->log, CTRL_LOG_ALERT, "waitpid() failed. %s\n", strerror(errno));
+            ctrl_log_print(g_ctrl->log, CTRL_LOG_ALERT, "waitpid() failed. %s", strerror(errno));
             return;
         }
 
@@ -287,7 +287,7 @@ int init_signals(const ctrl_log_t *log)
         sigemptyset(&sa.sa_mask);
         if (sigaction(sig->signo, &sa, NULL) == -1)
         {
-            ctrl_log_print(log, CTRL_LOG_ALERT, "sigaction(%s) failed\n", sig->signame);
+            ctrl_log_print(log, CTRL_LOG_ALERT, "sigaction(%s) failed", sig->signame);
         }
     }
     return CTRL_OK;
@@ -334,7 +334,7 @@ static int spawn_process(const controler_t *ctrl, process_func proc, void *data,
 
     if (init_channel(worker_processes[slot].channel, name, ctrl->log) != CTRL_OK)
     {
-        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "%s init_channel() failed\n", name);
+        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "%s init_channel() failed", name);
         return CTRL_ERROR;
     }
     
@@ -353,7 +353,7 @@ static int spawn_process(const controler_t *ctrl, process_func proc, void *data,
     else if (pid == -1)
     {
         close_channel(worker_processes[slot].channel, name, ctrl->log);
-        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "%s fork() failed\n", name, strerror(errno));
+        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "%s fork() failed", name, strerror(errno));
         return CTRL_ERROR;
     }
 
@@ -371,7 +371,7 @@ static int spawn_process(const controler_t *ctrl, process_func proc, void *data,
 static void worker_process(const controler_t *ctrl, void *data)
 {
     ctrl_process = CTRL_PROCESS_WORKER;
-    ctrl_log_print(ctrl->log, CTRL_LOG_INFO, "worker process pid %d\n", ctrl_pid);
+    ctrl_log_print(ctrl->log, CTRL_LOG_INFO, "worker process pid %d", ctrl_pid);
 
     for (;;)
     {
@@ -405,20 +405,20 @@ static int init_channel(int *channel, const char *name, const ctrl_log_t *log)
     
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, channel) == -1)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "%s socketpair() failed\n", name);
+        ctrl_log_print(log, CTRL_LOG_ERROR, "%s socketpair() failed", name);
         return CTRL_ERROR;
     }
 
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "%s channel %d:%d\n", name, channel[0], channel[1]);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "%s channel %d:%d", name, channel[0], channel[1]);
 
     if (set_nonblocking(channel[0], 1, log) != SOCKET_ERR_NONE)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "%s channel %d set nonblocking failed.\n", name, channel[0]);
+        ctrl_log_print(log, CTRL_LOG_ERROR, "%s channel %d set nonblocking failed.", name, channel[0]);
         return CTRL_ERROR;
     }
     if (set_nonblocking(channel[1], 1, log) != SOCKET_ERR_NONE)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "%s channel %d set nonblocking failed.\n", name, channel[1]);
+        ctrl_log_print(log, CTRL_LOG_ERROR, "%s channel %d set nonblocking failed.", name, channel[1]);
         return CTRL_ERROR;
     }
     
@@ -428,10 +428,10 @@ static int init_channel(int *channel, const char *name, const ctrl_log_t *log)
 static void close_channel(int *channel, const char *name, const ctrl_log_t *log)
 {
     if (close(channel[0]) == -1)
-        ctrl_log_print(log, CTRL_LOG_ERROR, "%s close channel %d failed.\n", name, channel[0]);
+        ctrl_log_print(log, CTRL_LOG_ERROR, "%s close channel %d failed.", name, channel[0]);
     
     if (close(channel[1]) == -1)
-        ctrl_log_print(log, CTRL_LOG_ERROR, "%s close channel %d failed.\n", name, channel[1]);
+        ctrl_log_print(log, CTRL_LOG_ERROR, "%s close channel %d failed.", name, channel[1]);
 }
 
 void dispacth_process_singal(const controler_t *ctrl)
@@ -454,7 +454,7 @@ void dispacth_process_master(const controler_t *ctrl)
 
     if (sigprocmask(SIG_BLOCK, &set, NULL) == -1)
     {
-        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "sigprocmask() failed. %s\n", strerror(errno));
+        ctrl_log_print(ctrl->log, CTRL_LOG_ERROR, "sigprocmask() failed. %s", strerror(errno));
     }
 
     sigemptyset(&set);

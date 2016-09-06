@@ -26,7 +26,6 @@ typedef enum
 {
     SOCKET_INVALID,
     SOCKET_HANDSHARE,
-    SOCKET_HANDSHARE_SSL,
     SOCKET_CONNECTED,
     SOCKET_ACCEPTED,
 }socket_status_t;

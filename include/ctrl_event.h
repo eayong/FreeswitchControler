@@ -19,7 +19,7 @@ struct ctrl_event_s
     void                *data;
     const ctrl_log_t    *log;
     
-    void (*handler) (ctrl_event_t *event);
+    int (*handler) (ctrl_event_t *event);
 };
 
 struct event_actions_s

@@ -5,7 +5,7 @@
 
 struct ctrl_conf_s
 {
-    int     listen;
+    int     ctrl_listen;
     int     worker;
     int     connects;
     int     events;

@@ -61,7 +61,7 @@ static int tcp_send(const ctrl_socket_t *sock, const char *data, uint32_t len, c
             {
                 continue;
             }
-            else if (errno == EWOULDBLOCK)
+            else if (errno == EWOULDBLOCK || errno == EAGAIN)
             {
                 break;
             }
@@ -93,7 +93,7 @@ static int tcp_recv(const ctrl_socket_t *sock, char *data, uint32_t len, const c
             {
                 nread = 0;
             }
-            else if (errno == EWOULDBLOCK)
+            else if (errno == EWOULDBLOCK || errno == EAGAIN)
             {
                 break;
             }
@@ -128,7 +128,7 @@ static void tcp_close(ctrl_socket_t *sock, const ctrl_log_t *log)
         close(sock->fd);
         sock->status = SOCKET_INVALID;
     }
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d close.\n", sock->fd);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d close.", sock->fd);
 }
 
 

@@ -31,7 +31,7 @@ int init_ctrl_conf(ctrl_conf_t *conf, const char *conf_file)
         fprintf(stderr, "iniparser_load %s error.\n", file);
         return CTRL_ERROR;
     }
-    conf->listen = iniparser_getint(ini, "main:listen", DEFAULT_LISTEN_PORT);
+    conf->ctrl_listen = iniparser_getint(ini, "main:listen", DEFAULT_LISTEN_PORT);
     conf->worker = iniparser_getint(ini, "main:worker_count", DEFAULT_WORKER_COUNT);
     conf->connects = iniparser_getint(ini, "main:connects", DEFAUL_MAX_CONNECTION_SIZE);
     conf->events = iniparser_getint(ini, "event:events", DEFAUL_MAX_EVENT_SIZE);

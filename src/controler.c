@@ -3,7 +3,7 @@
 #include "controler.h"
 
 
-volatile controler_t *g_ctrl = NULL;
+controler_t *g_ctrl = NULL;
 
 
 int init_controler(controler_t *ctrl, const ctrl_conf_t *conf, ctrl_log_t *log)
@@ -76,9 +76,9 @@ void fini_controler(controler_t *ctrl)
         ctrl->ep_fd = -1;
     }
 
-    if (ctrl->listen.serv.sock.status != SOCKET_INVALID)
+    if (ctrl->ctrl_listen.sock.status != SOCKET_INVALID)
     {
-        fini_server_socket(&ctrl->listen.serv, ctrl->log);
+        fini_server_socket(&ctrl->ctrl_listen, ctrl->log);
     }
 
     if (ctrl->connections)

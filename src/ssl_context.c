@@ -45,17 +45,17 @@ int init_ssl_context(ssl_context_t * ssl_ctx, int protocols, const ctrl_log_t *l
 
     if (init_client_ctx(ssl_ctx, log) < 0)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "init_client_ctx error.\n");
+        ctrl_log_print(log, CTRL_LOG_ERROR, "init_client_ctx error.");
         return -1;
     }
 
     if (init_server_ctx(ssl_ctx, log, cert_file, key_file) < 0)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "init_server_ctx error.\n");
+        ctrl_log_print(log, CTRL_LOG_ERROR, "init_server_ctx error.");
         return -1;
     }
     
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "init_ssl_context success...\n");
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "init_ssl_context success...");
     return 0;
 }
 
@@ -72,7 +72,7 @@ void fini_ssl_context(ssl_context_t * ssl_ctx, const ctrl_log_t *log)
         SSL_CTX_free(ssl_ctx->serv_ctx);
         ssl_ctx->serv_ctx = NULL;
     }
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_ssl_context success...\n");
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_ssl_context success...");
 }
 
 
@@ -85,7 +85,7 @@ static int init_client_ctx(ssl_context_t * ssl_ctx, const ctrl_log_t *log)
     ssl_ctx->cli_ctx = SSL_CTX_new(SSLv23_method());
     if (ssl_ctx->cli_ctx == NULL)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "init_client_ctx SSL_CTX_new(SSLv23_method()) failed. %s\n",
+        ctrl_log_print(log, CTRL_LOG_ERROR, "init_client_ctx SSL_CTX_new(SSLv23_method()) failed. %s",
             ERR_error_string(ERR_get_error(), NULL));
         return -1;
     }
@@ -120,14 +120,14 @@ static int init_server_ctx(ssl_context_t * ssl_ctx, const ctrl_log_t *log,
 {
     if (ssl_ctx == NULL || cert_file == NULL || key_file == NULL)
     {
-        fprintf(stderr, "InitServer param error.\n");
+        fprintf(stderr, "InitServer param error.");
         return -1;
     }
     
     ssl_ctx->serv_ctx = SSL_CTX_new(SSLv23_method());
     if (ssl_ctx->serv_ctx == NULL)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "init_server_ctx SSL_CTX_new(SSLv23_method()) failed. %s\n",
+        ctrl_log_print(log, CTRL_LOG_ERROR, "init_server_ctx SSL_CTX_new(SSLv23_method()) failed. %s",
             ERR_error_string(ERR_get_error(), NULL));
         return -1;
     }
@@ -156,19 +156,19 @@ static int init_server_ctx(ssl_context_t * ssl_ctx, const ctrl_log_t *log,
     
     if (SSL_CTX_use_certificate_file(ssl_ctx->serv_ctx, cert_file,  SSL_FILETYPE_PEM) <= 0)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_CTX_use_certificate_file %s error. %s\n", cert_file, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_CTX_use_certificate_file %s error. %s", cert_file, ERR_error_string(ERR_get_error(), NULL));
         return -1;
     }
     
     if (SSL_CTX_use_PrivateKey_file(ssl_ctx->serv_ctx, key_file, SSL_FILETYPE_PEM) <= 0)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_CTX_use_PrivateKey_file %s error. %s\n", key_file, ERR_error_string(ERR_get_error(), NULL));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "SSL_CTX_use_PrivateKey_file %s error. %s", key_file, ERR_error_string(ERR_get_error(), NULL));
         return -1;
     }
 
     if (!SSL_CTX_check_private_key(ssl_ctx->serv_ctx))
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "Private key does not match the certificate public key\n");
+        ctrl_log_print(log, CTRL_LOG_ERROR, "Private key does not match the certificate public key");
         return -1;
     }
 

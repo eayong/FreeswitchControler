@@ -42,11 +42,11 @@ int set_nonblocking(int fd, int blocking, const ctrl_log_t *log)
     ret = fcntl(fd, F_SETFL, flags);
     if (ret < 0)
     {
-        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set %s failed.\n", fd, blocking ? "nonblocking" : "blocking");
+        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set %s failed.", fd, blocking ? "nonblocking" : "blocking");
         return SOCKET_ERR_FAIL;
     }
     
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set %s success.\n", fd, blocking ? "nonblocking" : "blocking");
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set %s success.", fd, blocking ? "nonblocking" : "blocking");
     return SOCKET_ERR_NONE;
 }
 
@@ -59,11 +59,11 @@ int set_recv_timeout(int fd, int msec, const ctrl_log_t *log)
     int ret = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
     if (ret != 0)
     {
-        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set_recv_timeout %d failed.\n", fd, msec);
+        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set_recv_timeout %d failed.", fd, msec);
         return SOCKET_ERR_FAIL;
     }
     
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set_recv_timeout %d success.\n", fd, msec);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set_recv_timeout %d success.", fd, msec);
     return SOCKET_ERR_NONE;
 }
 
@@ -76,11 +76,11 @@ int set_send_timeout(int fd, int msec, const ctrl_log_t *log)
     int ret = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof(tv));
     if (ret != 0)
     {
-        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set_send_timeout %d failed.\n", fd, msec);
+        ctrl_log_print(log, CTRL_LOG_INFO, "socket %d set_send_timeout %d failed.", fd, msec);
         return SOCKET_ERR_FAIL;
     }
     
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set_send_timeout %d success.\n", fd, msec);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d set_send_timeout %d success.", fd, msec);
     return SOCKET_ERR_NONE;
 }
 
@@ -101,7 +101,7 @@ int init_addr(ctrl_socket_t *sock, const ctrl_log_t *log)
         return SOCKET_ERR_FAIL;
     }
     
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d info: location[%s:%d], remote: %s.\n",
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "socket %d info: location[%s:%d], remote: %s.",
         sock->fd, inet_ntoa(sock->local_addr.sin_addr), ntohs(sock->local_addr.sin_port),
         inet_ntoa(sock->remote_addr.sin_addr), ntohs(sock->remote_addr.sin_port));
     return SOCKET_ERR_NONE;

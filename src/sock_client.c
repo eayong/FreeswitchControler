@@ -26,7 +26,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "initialize socket failed. error: %s\n", strerror(errno));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "initialize socket failed. error: %s", strerror(errno));
         return SOCKET_ERR_FAIL;
     }
     
@@ -69,7 +69,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
     if (!ret) 
     {
         close(fd);
-        ctrl_log_print(log, CTRL_LOG_ERROR, "connect socket %s:%d failed. error: %s\n",
+        ctrl_log_print(log, CTRL_LOG_ERROR, "connect socket %s:%d failed. error: %s",
             host, port, strerror(errno));
         return -1;
     }
@@ -79,7 +79,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
     {
         if (ssl_init_socket(&client->sock, fd, SOCKET_SSL_CLIENT, log, client->ssl_ctx) != SOCKET_ERR_NONE)
         {
-            ctrl_log_print(log, CTRL_LOG_ERROR, "ssl_init_socket %d failed. error: %s\n", fd, strerror(errno));
+            ctrl_log_print(log, CTRL_LOG_ERROR, "ssl_init_socket %d failed. error: %s", fd, strerror(errno));
             close(fd);
             return SOCKET_ERR_FAIL;
         }
@@ -88,7 +88,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
     {
         if (tcp_init_socket(&client->sock, fd, SOCKET_TCP_CLIENT, log) != SOCKET_ERR_NONE)
         {
-            ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s\n", fd, strerror(errno));
+            ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s", fd, strerror(errno));
             close(fd);
             return SOCKET_ERR_FAIL;
         }
@@ -96,7 +96,7 @@ int init_client_socket(client_socket_t *client, const char *host, int port, cons
 #else
     if (tcp_init_socket(&client->sock, fd, SOCKET_TCP_CLIENT, log) != SOCKET_ERR_NONE)
     {
-        ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s\n", fd, strerror(errno));
+        ctrl_log_print(log, CTRL_LOG_ERROR, "tcp_init_socket %d failed. error: %s", fd, strerror(errno));
         close(fd);
         return SOCKET_ERR_FAIL;
     }
@@ -117,7 +117,7 @@ int fini_client_socket(client_socket_t *client, const ctrl_log_t *log)
         client->sock.fd = -1;
     }
 
-    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_client_socket %d success.\n", client->sock.fd);
+    ctrl_log_print(log, CTRL_LOG_DEBUG, "fini_client_socket %d success.", client->sock.fd);
     return SOCKET_ERR_NONE;
 
 }
